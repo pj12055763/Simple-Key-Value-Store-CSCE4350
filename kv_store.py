@@ -20,8 +20,6 @@ except AttributeError:
 
 
 class Node:
-    """Linked-list node for the custom in-memory index."""
-
     def __init__(self, key: str, value: str, next_node=None):
         self.key = key
         self.value = value
@@ -29,8 +27,6 @@ class Node:
 
 
 class LinkedListIndex:
-    """Simple linked-list index with linear search."""
-
     def __init__(self):
         self.head = None
 
@@ -41,7 +37,6 @@ class LinkedListIndex:
                 current.value = value
                 return
             current = current.next
-
         self.head = Node(key, value, self.head)
 
     def get(self, key: str):
@@ -54,8 +49,6 @@ class LinkedListIndex:
 
 
 class KeyValueStore:
-    """Persistent append-only key-value store."""
-
     def __init__(self, path: str):
         self.path = path
         self.index = LinkedListIndex()
@@ -150,6 +143,8 @@ def process_command(store: KeyValueStore, line: str) -> bool:
         parts = line.split(" ", 2)
         if len(parts) == 3 and parts[1]:
             store.set(parts[1], parts[2])
+            sys.stdout.write("OK\n")
+            sys.stdout.flush()
         return True
 
     if line.startswith("GET "):
