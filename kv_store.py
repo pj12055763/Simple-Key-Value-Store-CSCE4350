@@ -131,29 +131,41 @@ class KeyValueStore:
 
 
 def process_command(store: KeyValueStore, line: str) -> bool:
-    line = line.rstrip("\r\n")
+    line = line.strip()
 
     if not line:
         return True
 
-    if line == "EXIT":
+    parts = line.split(None, 1)
+    command = parts[0].upper()
+
+    if command == "EXIT":
         return False
 
-    if line.startswith("SET "):
-        parts = line.split(" ", 2)
-        if len(parts) == 3 and parts[1]:
-            store.set(parts[1], parts[2])
-            sys.stdout.write("OK\n")
-            sys.stdout.flush()
+    if command == "SET":
+        if len(parts) < 2:
+            return True
+
+        rest = parts[1]
+        kv_parts = rest.split(None, 1)
+
+        if len(kv_parts) == 2 and kv_parts[0]:
+            key, value = kv_parts
+            store.set(key, value)
+            print("OK", flush=True)
+
         return True
 
-    if line.startswith("GET "):
-        parts = line.split(" ", 1)
-        if len(parts) == 2 and parts[1].strip():
-            value = store.get(parts[1].strip())
+    if command == "GET":
+        if len(parts) < 2:
+            return True
+
+        key = parts[1].strip()
+        if key:
+            value = store.get(key)
             if value is not None:
-                sys.stdout.write(str(value) + "\n")
-                sys.stdout.flush()
+                print(value, flush=True)
+
         return True
 
     return True
